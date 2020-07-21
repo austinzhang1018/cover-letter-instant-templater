@@ -6,6 +6,10 @@ from os.path import exists
 def read_file(filename):
     try:
         doc = docx.Document(filename)
+        # apply times new roman
+        style = doc.styles['Normal']
+        font = style.font
+        font.name = 'Times New Roman'
     except:
         print('Invalid filename!')
         return None
@@ -80,12 +84,11 @@ def retreive_story(story_name):
 
 def replace_fillables(text, fillables, is_field=True):
     start, end = (text.find('{'), text.find('}')) if is_field else (text.find('['), text.find(']'))
-    print(text[start:end])
     while start != -1 and end != -1:
         if end < start:
             raise Exception('First instance of } is before first instance of {. Make sure your template is defined correctly.')
         fillable = text[start+1:end]
-        text = text.replace('{%s}' if is_field else '[%s]' % fillable, fillables[fillable])
+        text = text.replace('{%s}' % fillable if is_field else '[%s]' % fillable, fillables[fillable])
         start, end = (text.find('{'), text.find('}')) if is_field else (text.find('['), text.find(']'))
 
     if start != -1 or end != -1:
@@ -103,7 +106,8 @@ def fill_template(company, template_filename):
     for paragraph in template.paragraphs:        
         text = replace_fillables(paragraph.text, fields, is_field=True)
         text = replace_fillables(text, stories, is_field=False)
-        paragraph.text = text
+        if paragraph.text != text:
+            paragraph.text = text
         
     template.save('letters/%s.docx' % company)
 
