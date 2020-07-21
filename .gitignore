@@ -1,0 +1,6 @@
+.~*
+__pycache__
+stories/*
+letters/*
+forms/*
+cover-letter-template.docx
