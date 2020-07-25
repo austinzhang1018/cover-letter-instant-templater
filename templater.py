@@ -104,8 +104,8 @@ def fill_template(company, template_filename):
     template = read_file(template_filename)
 
     for paragraph in template.paragraphs:        
-        text = replace_fillables(paragraph.text, fields, is_field=True)
-        text = replace_fillables(text, stories, is_field=False)
+        text = replace_fillables(paragraph.text, stories, is_field=False)
+        text = replace_fillables(text, fields, is_field=True)
         if paragraph.text != text:
             paragraph.text = text
         
@@ -118,6 +118,13 @@ if __name__ == '__main__':
     action = input('Type form to create form. Type anything else to create a cover letter: ')
     if action == 'form':
         if not exists('forms/%s.form' % company) or 'continue' in input('A form for %s already exists. Type continue to overwrite and anything else to exit: ' % company):
-            generate_form(company, TEMPLATE_NAME)
+            existing = input("If you'd like to copy an existing template, type the company name here. Otherwise, press enter: ")
+            if existing != '':
+                with open('forms/%s.form' % existing) as f:
+                    with open('forms/%s.form' % company, "w") as f1:
+                        for line in f:
+                            f1.write(line)
+            else:
+                generate_form(company, TEMPLATE_NAME)
     else:
         fill_template(company, TEMPLATE_NAME)
